@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
-<html lang="tr" class="h-full bg-slate-50">
+<html lang="tr" class="h-full bg-black">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Optik Sınav Okuyucu Pro</title>
+    <title>EDU PERFORMANS - Ölçme Değerlendirme</title>
     <!-- Telegram SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <!-- Tailwind CSS -->
@@ -13,293 +14,384 @@
     <!-- OpenCV.js -->
     <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
     <style>
-        .active-tab { color: #2563eb; border-top: 2px solid #2563eb; }
-        .scan-frame {
-            border: 2px dashed rgba(37, 99, 235, 0.5);
-            box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.45);
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .bg-card { background-color: #121214; }
+        .bg-card-soft { background-color: #1a1a1e; }
+        .border-dark { border-color: #27272a; }
+        .text-gold { color: #facc15; }
+        .bg-gold { background-color: #facc15; }
+        .bg-gold:active { background-color: #eab308; }
     </style>
 </head>
-<body class="h-full flex flex-col justify-between text-slate-800 antialiased selection:bg-blue-100">
+<body class="h-full flex flex-col justify-between text-zinc-100 antialiased selection:bg-amber-500/20">
 
-    <!-- Üst Bar / Durum -->
-    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-            <div class="p-2 bg-blue-600 rounded-xl text-white shadow-md shadow-blue-500/20">
-                <i data-lucide="scan-line" class="w-5 h-5"></i>
+    <!-- Üst Bar (Header) -->
+    <header class="bg-black/90 backdrop-blur-md border-b border-zinc-800 sticky top-0 z-30 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+            <div class="w-9 h-9 rounded-full bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 font-bold">
+                <i data-lucide="brain" class="w-5 h-5"></i>
             </div>
             <div>
-                <h1 class="font-bold text-base leading-tight">Optik Okuyucu</h1>
-                <p class="text-[11px] text-slate-500 font-medium">LGS & Deneme Analiz</p>
+                <h1 class="font-extrabold text-xs tracking-wider uppercase text-zinc-100 leading-tight">EDU PERFORMANS</h1>
+                <p class="text-[10px] text-amber-400 font-semibold tracking-wide">ÖLÇME DEĞERLENDİRME</p>
             </div>
         </div>
-        <div id="statusBadge" class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            <span id="statusText">Motor Yükleniyor</span>
+        <div class="flex items-center space-x-2 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-full text-xs text-zinc-300">
+            <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span class="font-medium text-[11px]">Kurum Yöneticisi</span>
         </div>
     </header>
 
-    <!-- Ana İçerik Alanı -->
-    <main class="flex-1 overflow-y-auto p-4 space-y-4 max-w-md mx-auto w-full pb-24">
+    <!-- İçerik Alanı -->
+    <main class="flex-1 overflow-y-auto p-4 space-y-5 max-w-md mx-auto w-full pb-28">
 
-        <!-- TAB 1: OKUMA EKRANI -->
-        <section id="tab-scan" class="space-y-4">
-            
-            <!-- Kamera / Yükleme Kartı -->
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm space-y-3">
-                <div class="relative w-full aspect-[3/4] bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center group" id="cameraBox">
-                    <canvas id="canvasOutput" class="max-w-full max-h-full object-contain hidden"></canvas>
-                    
-                    <!-- Başlangıç / Kamera Rehberi Overlay -->
-                    <div id="uploadPlaceholder" class="text-center p-6 space-y-3">
-                        <div class="w-16 h-16 bg-blue-500/10 text-blue-600 rounded-full flex items-center justify-center mx-auto border border-blue-200">
-                            <i data-lucide="camera" class="w-8 h-8"></i>
+        <!-- TAB 1: ANA SAYFA -->
+        <section id="tab-home" class="space-y-5">
+            <div class="bg-card border border-dark rounded-2xl p-5 space-y-4">
+                <h2 class="text-xl font-extrabold leading-snug text-white">
+                    Sınav sonuçlarını hızlı, düzenli ve güvenilir biçimde değerlendirin.
+                </h2>
+                <p class="text-xs text-zinc-400 leading-relaxed">
+                    Branş testleri ile LGS oturumlarını kameradan okutun veya galeriden seçin; puanları, sıralamayı ve soru başarılarını tek ekranda görün.
+                </p>
+                <button onclick="switchTab('scan')" class="w-full py-3.5 bg-gold text-black font-bold rounded-2xl flex items-center justify-center space-x-2 shadow-lg shadow-amber-500/10 active:scale-[0.98] transition">
+                    <i data-lucide="scan-line" class="w-5 h-5"></i>
+                    <span>Yeni Tarama</span>
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <div class="flex justify-between items-center px-1">
+                    <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider">Bugünün Özeti</span>
+                    <button onclick="switchTab('forms')" class="text-xs text-zinc-400 hover:text-white flex items-center space-x-1">
+                        <span>Tüm raporlar</span>
+                        <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+                <h3 class="text-lg font-bold text-white px-1">Kontrol paneli</h3>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-card border border-dark p-4 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-zinc-400 block">Okunan optik</span>
+                            <span class="text-2xl font-bold text-white mt-1 block">0</span>
+                            <span class="text-[10px] text-zinc-500">Bu oturum</span>
+                        </div>
+                        <div class="p-2.5 bg-zinc-800/80 rounded-xl text-amber-400">
+                            <i data-lucide="scan" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                    <div class="bg-card border border-dark p-4 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-zinc-400 block">Aktif grup</span>
+                            <span class="text-2xl font-bold text-white mt-1 block">1</span>
+                            <span class="text-[10px] text-zinc-500">4 öğrenci</span>
+                        </div>
+                        <div class="p-2.5 bg-zinc-800/80 rounded-xl text-amber-400">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: SINAVLAR -->
+        <section id="tab-exams" class="hidden space-y-4">
+            <div>
+                <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider">Kayıtlı cevap anahtarları</span>
+                <h2 class="text-2xl font-extrabold text-white mt-0.5">Sınavlar</h2>
+                <p class="text-xs text-zinc-400 mt-1">Bir kez hazırladığınız sınavı seçip doğrudan seri okumaya geçin.</p>
+            </div>
+
+            <button onclick="switchTab('scan')" class="w-full py-3 bg-gold text-black font-bold rounded-xl flex items-center justify-center space-x-2">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>Yeni sınav</span>
+            </button>
+
+            <div class="space-y-3 pt-2">
+                <div class="bg-card border border-dark p-4 rounded-2xl space-y-3 relative">
+                    <span class="absolute top-4 right-4 text-[10px] bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded-md border border-zinc-700">10 soru</span>
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20">
+                            <i data-lucide="clipboard-check" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <p class="font-semibold text-slate-200 text-sm">Optik Formu Kadrajlayın</p>
-                            <p class="text-xs text-slate-400 mt-1">Formun 4 siyah köşe işaretinin ekranda göründüğünden emin olun.</p>
+                            <h3 class="font-bold text-sm text-white">Kazanım Tarama 1</h3>
+                            <p class="text-xs text-zinc-400">Matematik · A kitapçığı</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 pt-1">
+                        <button onclick="switchTab('scan')" class="flex-1 py-2.5 bg-gold text-black font-semibold text-xs rounded-xl flex items-center justify-center space-x-1.5">
+                            <i data-lucide="scan" class="w-4 h-4"></i>
+                            <span>Taramayı başlat</span>
+                        </button>
+                        <button class="p-2.5 bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-xl">
+                            <i data-lucide="pencil" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-card border border-dark p-4 rounded-2xl space-y-3 relative">
+                    <span class="absolute top-4 right-4 text-[10px] bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded-md border border-zinc-700">10 soru</span>
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20">
+                            <i data-lucide="clipboard-check" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm text-white">Mat10</h3>
+                            <p class="text-xs text-zinc-400">Matematik · A kitapçığı</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 pt-1">
+                        <button onclick="switchTab('scan')" class="flex-1 py-2.5 bg-gold text-black font-semibold text-xs rounded-xl flex items-center justify-center space-x-1.5">
+                            <i data-lucide="scan" class="w-4 h-4"></i>
+                            <span>Taramayı başlat</span>
+                        </button>
+                        <button class="p-2.5 bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-xl">
+                            <i data-lucide="pencil" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: TARA (YENİ TARAMA MODAL/EKRAN) -->
+        <section id="tab-scan" class="hidden space-y-4">
+            <div class="bg-card border border-dark rounded-2xl p-4 space-y-4">
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                    <h2 class="font-bold text-base text-white">Yeni tarama</h2>
+                    <span class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full font-semibold">20 soru</span>
+                </div>
+
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <label class="text-zinc-400 block mb-1">Kayıtlı test</label>
+                        <select class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-zinc-200 focus:outline-none focus:border-amber-400">
+                            <option>Kayıtlı bir test seçin</option>
+                            <option selected>Kazanım Tarama 1</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-zinc-400 block mb-1">Sınav adı</label>
+                        <input type="text" value="Kazanım Tarama 1" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-zinc-200 focus:outline-none focus:border-amber-400">
+                    </div>
+
+                    <div>
+                        <label class="text-zinc-400 block mb-1">Sınıf / grup</label>
+                        <select class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-zinc-200 focus:outline-none focus:border-amber-400">
+                            <option>8A · 4 öğrenci</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-zinc-400 block mb-1">Ders</label>
+                        <select class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-zinc-200 focus:outline-none focus:border-amber-400">
+                            <option>Matematik</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-zinc-400 block mb-2">Form türü</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button class="p-3 bg-zinc-900 border border-zinc-800 rounded-xl text-center hover:border-amber-400">
+                                <span class="block text-lg font-bold text-white">10</span>
+                                <span class="text-[10px] text-zinc-400">soruluk branş</span>
+                            </button>
+                            <button class="p-3 bg-zinc-900 border border-zinc-800 rounded-xl text-center hover:border-amber-400">
+                                <span class="block text-lg font-bold text-white">15</span>
+                                <span class="text-[10px] text-zinc-400">soruluk branş</span>
+                            </button>
+                            <button class="p-3 bg-amber-500/10 border border-amber-400 rounded-xl text-center">
+                                <span class="block text-lg font-bold text-amber-400">20</span>
+                                <span class="text-[10px] text-amber-300">soruluk branş</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <label for="imageInput" class="w-full py-3.5 bg-gold text-black font-bold rounded-xl flex items-center justify-center space-x-2 cursor-pointer shadow-lg shadow-amber-500/10">
+                        <span>Devam</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </label>
+                    <input type="file" id="imageInput" accept="image/*" capture="environment" class="hidden">
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: SINIFLAR -->
+        <section id="tab-classes" class="hidden space-y-4">
+            <div>
+                <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider">Öğrenci listeleriniz</span>
+                <h2 class="text-2xl font-extrabold text-white mt-0.5">Sınıflarım</h2>
+                <p class="text-xs text-zinc-400 mt-1">Tarama sırasında öğrenciyi numarasıyla eşleştirmek için grup listenizi oluşturun.</p>
+            </div>
+
+            <button class="w-full py-3 bg-gold text-black font-bold rounded-xl flex items-center justify-center space-x-1.5">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>Yeni grup</span>
+            </button>
+
+            <div class="bg-card border border-dark p-4 rounded-2xl space-y-3">
+                <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Gruplar</h3>
+                <div class="p-3 bg-amber-500 text-black font-bold rounded-xl flex justify-between items-center text-sm">
+                    <span>8A</span>
+                    <span class="text-xs font-medium opacity-80">4 öğrenci</span>
+                </div>
+            </div>
+
+            <div class="bg-card border border-dark p-4 rounded-2xl space-y-3">
+                <h3 class="font-bold text-sm text-white">8A öğrenci listesi</h3>
+                <p class="text-xs text-zinc-500">Numara en fazla 5 hanelidir.</p>
+
+                <div class="space-y-2 pt-1">
+                    <input type="number" placeholder="Numara" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-xs text-zinc-200 focus:outline-none focus:border-amber-400">
+                    <input type="text" placeholder="Ad soyad" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-xs text-zinc-200 focus:outline-none focus:border-amber-400">
+                    <button class="w-full py-2.5 bg-gold text-black font-bold text-xs rounded-xl flex items-center justify-center space-x-1">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        <span>Ekle</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-card border border-dark p-4 rounded-2xl space-y-2">
+                <h3 class="font-bold text-sm text-white">E-Tablo ile toplu aktarım</h3>
+                <p class="text-xs text-zinc-400 leading-relaxed">Örnek tabloyu doldurun; dosyayı yükleyin veya paylaşılan Google E-Tablolar bağlantısını kullanın.</p>
+            </div>
+        </section>
+
+        <!-- TAB 5: OPTİK FORMLAR / RAPORLAR -->
+        <section id="tab-forms" class="hidden space-y-4">
+            <div class="bg-card border border-dark p-4 rounded-2xl space-y-4">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2.5 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20">
+                        <i data-lucide="clipboard-list" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Optik formlar</h2>
+                        <p class="text-xs text-zinc-400">İndir, yazdır veya paylaş</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 pt-2">
+                    <!-- Form İtem 1 -->
+                    <div class="border-b border-zinc-800 pb-4 space-y-2">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-bold text-sm text-white">10 Soruluk Branş Testi</h3>
+                            <div class="flex space-x-1 text-[10px]">
+                                <span class="bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700">Branş</span>
+                                <span class="bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700">A4 · 4 optik</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-zinc-400">Kısa kazanım ve konu taramaları için hazır optik.</p>
+                        <div class="grid grid-cols-3 gap-2 pt-1">
+                            <button class="py-2 bg-zinc-800 text-zinc-200 font-medium text-xs rounded-xl flex items-center justify-center space-x-1 border border-zinc-700"><i data-lucide="download" class="w-3.5 h-3.5"></i><span>İndir</span></button>
+                            <button class="py-2 bg-gold text-black font-bold text-xs rounded-xl flex items-center justify-center space-x-1"><i data-lucide="printer" class="w-3.5 h-3.5"></i><span>Yazdır</span></button>
+                            <button class="py-2 bg-zinc-800 text-zinc-200 font-medium text-xs rounded-xl flex items-center justify-center space-x-1 border border-zinc-700"><i data-lucide="share-2" class="w-3.5 h-3.5"></i><span>Paylaş</span></button>
                         </div>
                     </div>
 
-                    <!-- Tarama Animasyon Çizgisi -->
-                    <div id="scanLine" class="hidden absolute inset-x-0 h-0.5 bg-blue-500 shadow-[0_0_15px_#3b82f6] animate-[ping_1.5s_infinite]"></div>
-                </div>
+                    <!-- Form İtem 2 -->
+                    <div class="border-b border-zinc-800 pb-4 space-y-2">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-bold text-sm text-white">15 Soruluk Branş Testi</h3>
+                            <div class="flex space-x-1 text-[10px]">
+                                <span class="bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700">Branş</span>
+                                <span class="bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700">A4 · 4 optik</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-zinc-400">Branş değerlendirmelerinde pratik kullanım için.</p>
+                        <div class="grid grid-cols-3 gap-2 pt-1">
+                            <button class="py-2 bg-zinc-800 text-zinc-200 font-medium text-xs rounded-xl flex items-center justify-center space-x-1 border border-zinc-700"><i data-lucide="download" class="w-3.5 h-3.5"></i><span>İndir</span></button>
+                            <button class="py-2 bg-gold text-black font-bold text-xs rounded-xl flex items-center justify-center space-x-1"><i data-lucide="printer" class="w-3.5 h-3.5"></i><span>Yazdır</span></button>
+                            <button class="py-2 bg-zinc-800 text-zinc-200 font-medium text-xs rounded-xl flex items-center justify-center space-x-1 border border-zinc-700"><i data-lucide="share-2" class="w-3.5 h-3.5"></i><span>Paylaş</span></button>
+                        </div>
+                    </div>
 
-                <label for="imageInput" class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] transition text-white font-semibold rounded-xl flex items-center justify-center space-x-2 shadow-lg shadow-blue-600/25 cursor-pointer">
-                    <i data-lucide="image-plus" class="w-5 h-5"></i>
-                    <span>Optik Form Çek / Dosya Seç</span>
-                </label>
-                <input type="file" id="imageInput" accept="image/*" capture="environment" class="hidden" disabled>
-            </div>
-
-            <!-- Okuma Sonuç Kartı -->
-            <div id="resultCard" class="hidden bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden transition-all duration-300">
-                <div class="bg-slate-900 text-white p-4 flex items-center justify-between">
-                    <div>
-                        <span id="resBooklet" class="px-2 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[11px] font-bold rounded-md uppercase tracking-wider">A Kitapçığı</span>
-                        <h2 class="text-lg font-bold mt-1" id="resStudentName">Öğrenci Adı</h2>
-                        <p class="text-xs text-slate-400">Numara: <span id="resStudentNo" class="text-slate-200 font-mono">-</span></p>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-3xl font-black text-green-400 font-mono" id="resScore">100</div>
-                        <span class="text-[10px] uppercase text-slate-400 font-semibold tracking-wider">Puan</span>
-                    </div>
-                </div>
-
-                <!-- Özet İstatistikler -->
-                <div class="grid grid-cols-3 divide-x divide-slate-100 bg-slate-50 border-b border-slate-100 py-2.5 text-center">
-                    <div>
-                        <span class="block text-xs text-slate-500">Doğru</span>
-                        <span class="text-base font-bold text-green-600" id="resCorrect">0</span>
-                    </div>
-                    <div>
-                        <span class="block text-xs text-slate-500">Yanlış</span>
-                        <span class="text-base font-bold text-red-600" id="resWrong">0</span>
-                    </div>
-                    <div>
-                        <span class="block text-xs text-slate-500">Boş</span>
-                        <span class="text-base font-bold text-amber-600" id="resEmpty">0</span>
-                    </div>
-                </div>
-
-                <!-- Soru Cevap Detay Izgarası -->
-                <div class="p-4 space-y-2">
-                    <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider">Cevap Analizi (20 Soru)</h3>
-                    <div id="questionsGrid" class="grid grid-cols-5 gap-1.5 pt-1">
-                        <!-- Soru baloncukları dinamik dolacak -->
+                    <!-- Form İtem 3 -->
+                    <div class="border-b border-zinc-800 pb-4 space-y-2">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-bold text-sm text-white">20 Soruluk Branş Testi</h3>
+                            <div class="flex space-x-1 text-[10px]">
+                                <span class="bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700">Branş</span>
+                                <span class="bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700">A4 · 4 optik</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-zinc-400">Tam kapsamlı branş taramaları ve denemeleri için.</p>
+                        <div class="grid grid-cols-3 gap-2 pt-1">
+                            <button class="py-2 bg-zinc-800 text-zinc-200 font-medium text-xs rounded-xl flex items-center justify-center space-x-1 border border-zinc-700"><i data-lucide="download" class="w-3.5 h-3.5"></i><span>İndir</span></button>
+                            <button class="py-2 bg-gold text-black font-bold text-xs rounded-xl flex items-center justify-center space-x-1"><i data-lucide="printer" class="w-3.5 h-3.5"></i><span>Yazdır</span></button>
+                            <button class="py-2 bg-zinc-800 text-zinc-200 font-medium text-xs rounded-xl flex items-center justify-center space-x-1 border border-zinc-700"><i data-lucide="share-2" class="w-3.5 h-3.5"></i><span>Paylaş</span></button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <!-- TAB 2: ÖĞRENCİ LİSTESİ -->
-        <section id="tab-students" class="hidden space-y-3">
-            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
-                <div class="flex items-center justify-between border-b pb-2">
-                    <h2 class="font-bold text-slate-800">Kayıtlı Öğrenciler</h2>
-                    <span class="text-xs font-semibold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full" id="studentCount">0 Sınıf</span>
-                </div>
-                <ul id="studentListContainer" class="divide-y divide-slate-100 text-sm">
-                    <!-- Öğrenciler JS ile basılacak -->
-                </ul>
-            </div>
-        </section>
-
-        <!-- TAB 3: CEVAP ANAHTARI -->
-        <section id="tab-keys" class="hidden space-y-3">
-            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
-                <h2 class="font-bold text-slate-800 border-b pb-2">Aktif Cevap Anahtarı</h2>
-                <div id="keysContainer" class="space-y-3">
-                    <!-- A ve B Kitapçığı anahtarları -->
-                </div>
+            <!-- İmza / Designed By Footer -->
+            <div class="text-center py-4 text-xs text-zinc-500 space-x-1">
+                <span>Designed by</span>
+                <span class="font-bold text-zinc-200 tracking-wide">§ uğurşarı</span>
             </div>
         </section>
 
     </main>
 
-    <!-- Alt Navigasyon Barı -->
-    <nav class="fixed bottom-0 inset-x-0 bg-white/90 backdrop-blur-md border-t border-slate-200 z-40 max-w-md mx-auto">
-        <div class="grid grid-cols-3 h-16">
-            <button onclick="switchTab('scan')" id="nav-scan" class="flex flex-col items-center justify-center space-y-1 active-tab transition-colors">
-                <i data-lucide="scan" class="w-5 h-5"></i>
-                <span class="text-[11px] font-medium">Form Oku</span>
+    <!-- Alt Navigasyon Barı (5 Menü + Yüzen Sarı Tara Butonu) -->
+    <nav class="fixed bottom-0 inset-x-0 bg-black/95 backdrop-blur-md border-t border-zinc-800 z-40 max-w-md mx-auto px-2">
+        <div class="grid grid-cols-5 h-16 items-center text-center relative">
+            <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center justify-center space-y-1 text-amber-400">
+                <i data-lucide="home" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Ana Sayfa</span>
             </button>
-            <button onclick="switchTab('students')" id="nav-students" class="flex flex-col items-center justify-center space-y-1 text-slate-400 hover:text-slate-600 transition-colors">
+            <button onclick="switchTab('exams')" id="nav-exams" class="flex flex-col items-center justify-center space-y-1 text-zinc-500 hover:text-zinc-300">
+                <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Sınavlar</span>
+            </button>
+            
+            <!-- Ortadaki Sarı Tara Butonu -->
+            <div class="relative flex items-center justify-center -top-3">
+                <button onclick="switchTab('scan')" class="w-12 h-12 bg-gold text-black rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/20 active:scale-95 transition">
+                    <i data-lucide="scan" class="w-6 h-6"></i>
+                </button>
+                <span class="absolute -bottom-4 text-[10px] font-medium text-zinc-400">Tara</span>
+            </div>
+
+            <button onclick="switchTab('classes')" id="nav-classes" class="flex flex-col items-center justify-center space-y-1 text-zinc-500 hover:text-zinc-300">
                 <i data-lucide="users" class="w-5 h-5"></i>
-                <span class="text-[11px] font-medium">Öğrenciler</span>
+                <span class="text-[10px] font-medium">Sınıflar</span>
             </button>
-            <button onclick="switchTab('keys')" id="nav-keys" class="flex flex-col items-center justify-center space-y-1 text-slate-400 hover:text-slate-600 transition-colors">
-                <i data-lucide="key-round" class="w-5 h-5"></i>
-                <span class="text-[11px] font-medium">Cevap Anahtarı</span>
+            <button onclick="switchTab('forms')" id="nav-forms" class="flex flex-col items-center justify-center space-y-1 text-zinc-500 hover:text-zinc-300">
+                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Raporlar</span>
             </button>
         </div>
     </nav>
 
     <script>
         lucide.createIcons();
-
         const tg = window.Telegram?.WebApp;
         if(tg) { tg.expand(); tg.ready(); }
 
-        const studentDB = {
-            "304": "Amine Arife İnci",
-            "306": "Fahrettin İlbak Özkarslıoğlu",
-            "318": "Eda Şahin",
-            "319": "Eyüp Ensar Şimşek",
-            "323": "Hamza Çelik",
-            "325": "Hanifi Levent Akbaş",
-            "342": "Şeymanur Yoldaş",
-            "344": "Yusuf Yıldırım",
-            "347": "Zeynep Seber",
-            "352": "Elif Buse Top"
-        };
+        function switchTab(tabName) {
+            const tabs = ['home', 'exams', 'scan', 'classes', 'forms'];
+            tabs.forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                if(el) el.classList.add('hidden');
+                
+                const nav = document.getElementById(`nav-${t}`);
+                if(nav) nav.className = "flex flex-col items-center justify-center space-y-1 text-zinc-500 hover:text-zinc-300";
+            });
 
-        const answerKeys = {
-            "A": ["B","D","A","B","C","A","C","B","A","A","C","A","D","A","A","C","D","C","C","B"],
-            "B": ["C","A","D","A","A","C","D","C","C","B","B","D","A","B","C","A","C","B","A","A"]
-        };
+            const activeTab = document.getElementById(`tab-${tabName}`);
+            if(activeTab) activeTab.classList.remove('hidden');
+
+            const activeNav = document.getElementById(`nav-${tabName}`);
+            if(activeNav) activeNav.className = "flex flex-col items-center justify-center space-y-1 text-amber-400 font-semibold";
+        }
 
         function onOpenCvReady() {
-            const badge = document.getElementById('statusBadge');
-            const text = document.getElementById('statusText');
-            badge.className = "flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200";
-            badge.querySelector('span').className = "w-2 h-2 rounded-full bg-emerald-500";
-            text.innerText = "Sistem Hazır";
-            document.getElementById('imageInput').disabled = false;
-        }
-
-        document.getElementById('imageInput').addEventListener('change', function(e) {
-            let file = e.target.files[0];
-            if (!file) return;
-
-            document.getElementById('uploadPlaceholder').classList.add('hidden');
-            document.getElementById('canvasOutput').classList.remove('hidden');
-            document.getElementById('scanLine').classList.remove('hidden');
-
-            let img = new Image();
-            img.onload = function() { processImage(img); };
-            img.src = URL.createObjectURL(file);
-        });
-
-        function processImage(imgElement) {
-            let src = cv.imread(imgElement);
-            let dst = new cv.Mat();
-            cv.resize(src, dst, new cv.Size(600, 800));
-            cv.imshow('canvasOutput', dst);
-
-            setTimeout(() => {
-                document.getElementById('scanLine').classList.add('hidden');
-                
-                let numbers = Object.keys(studentDB);
-                let randomNo = numbers[Math.floor(Math.random() * numbers.length)];
-                let studentName = studentDB[randomNo];
-                let booklet = Math.random() > 0.5 ? "A" : "B";
-                let key = answerKeys[booklet];
-
-                // Demo okuma simülasyonu
-                let userAnswers = key.map((correctAns, idx) => {
-                    let rand = Math.random();
-                    if (rand > 0.85) return "Boş";
-                    if (rand > 0.70) return ["A","B","C","D"].find(x => x !== correctAns);
-                    return correctAns;
-                });
-
-                let correct = 0, wrong = 0, empty = 0;
-                let gridHtml = "";
-
-                userAnswers.forEach((ans, idx) => {
-                    let targetKey = key[idx];
-                    let statusClass = "bg-slate-100 text-slate-600 border-slate-200";
-                    if (ans === targetKey) {
-                        correct++;
-                        statusClass = "bg-green-100 text-green-700 border-green-300 font-bold";
-                    } else if (ans === "Boş") {
-                        empty++;
-                        statusClass = "bg-amber-100 text-amber-700 border-amber-300";
-                    } else {
-                        wrong++;
-                        statusClass = "bg-red-100 text-red-700 border-red-300";
-                    }
-
-                    gridHtml += `
-                        <div class="border rounded-lg p-1.5 text-center ${statusClass}">
-                            <span class="block text-[10px] opacity-60">${idx + 1}</span>
-                            <span class="text-xs">${ans === "Boş" ? "-" : ans}</span>
-                        </div>
-                    `;
-                });
-
-                let score = Math.round((correct / 20) * 100);
-
-                document.getElementById('resStudentName').innerText = studentName;
-                document.getElementById('resStudentNo').innerText = randomNo;
-                document.getElementById('resBooklet').innerText = booklet + " Kitapçığı";
-                document.getElementById('resCorrect').innerText = correct;
-                document.getElementById('resWrong').innerText = wrong;
-                document.getElementById('resEmpty').innerText = empty;
-                document.getElementById('resScore').innerText = score;
-                document.getElementById('questionsGrid').innerHTML = gridHtml;
-
-                document.getElementById('resultCard').classList.remove('hidden');
-
-                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            }, 600);
-
-            src.delete(); dst.delete();
-        }
-
-        function switchTab(tabName) {
-            ['scan', 'students', 'keys'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`nav-${t}`).className = "flex flex-col items-center justify-center space-y-1 text-slate-400 hover:text-slate-600 transition-colors";
-            });
-            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-            document.getElementById(`nav-${tabName}`).className = "flex flex-col items-center justify-center space-y-1 active-tab transition-colors";
-            
-            if(tabName === 'students') renderStudents();
-            if(tabName === 'keys') renderKeys();
-        }
-
-        function renderStudents() {
-            let list = document.getElementById('studentListContainer');
-            let entries = Object.entries(studentDB);
-            document.getElementById('studentCount').innerText = `${entries.length} Öğrenci`;
-            list.innerHTML = entries.map(([no, name]) => `
-                <li class="py-2.5 flex justify-between items-center">
-                    <span class="font-medium text-slate-700">${name}</span>
-                    <span class="font-mono text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md border">${no}</span>
-                </li>
-            `).join('');
-        }
-
-        function renderKeys() {
-            let container = document.getElementById('keysContainer');
-            container.innerHTML = Object.entries(answerKeys).map(([booklet, keys]) => `
-                <div class="border border-slate-100 rounded-xl p-3 bg-slate-50 space-y-2">
-                    <div class="font-bold text-xs text-blue-600">${booklet} Kitapçığı</div>
-                    <div class="font-mono text-xs break-all text-slate-600 tracking-wider">${keys.join(" - ")}</div>
-                </div>
-            `).join('');
+            console.log("OpenCV Ready");
         }
     </script>
 </body>
